@@ -1,18 +1,16 @@
 import React from "react";
-import ProductCard from "./components/ProductCard";
-import products from "./products";
+import Header from "./components/Header";
+import Greeting from "./components/Greeting";
 
-function App() {
-  const productCardComponents = products.map(product => {
+class App extends React.Component {
+  render() {
     return (
-      <ProductCard key={product.id} name={product.name} description={product.description} price={product.price}/>
+      <div>
+        <Header username="johnSmith123"/>
+        <Greeting />
+      </div>
     )
-  })
-  return (
-    <div>
-      {productCardComponents}
-    </div>
-  )
+  }
 }
 
 export default App;
