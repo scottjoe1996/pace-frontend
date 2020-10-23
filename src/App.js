@@ -1,13 +1,22 @@
 import React from "react";
-import Header from "./components/Header";
-import Greeting from "./components/Greeting";
+import TodoItem from "./components/TodoItem";
+import todosData from "./todosData";
 
 class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      todosData: todosData
+    }
+  }
+
   render() {
+    const todoItemComponents = this.state.todosData.map(item => {
+      return <TodoItem id={item.id} item={item}/>
+    })
     return (
       <div>
-        <Header username="johnSmith123"/>
-        <Greeting />
+        {todoItemComponents}
       </div>
     )
   }
