@@ -6,13 +6,29 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      todosData: todosData
+      todos: todosData
     }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(id) {
+    this.setState(previousState => {
+      const newTodos = previousState.todos.map(item => {
+        if(item.id === id) {
+          item.isCompleted = !item.isCompleted;
+        }
+        return item;
+      })
+
+      return {
+          todos: newTodos
+      }
+    })
   }
 
   render() {
-    const todoItemComponents = this.state.todosData.map(item => {
-      return <TodoItem id={item.id} item={item}/>
+    const todoItemComponents = this.state.todos.map(item => {
+      return <TodoItem key={item.id} item={item} handleChange={this.handleChange}/>
     })
     return (
       <div>
