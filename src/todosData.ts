@@ -1,4 +1,6 @@
-const todosData = [
+import TodoItem from "./types/TodoItem";
+
+const todosData : TodoItem[] = [
     {
         id: 1,
         isCompleted: true,
