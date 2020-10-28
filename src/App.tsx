@@ -4,7 +4,7 @@ import LogInDialog from "./components/logInDialog/LogInDialog";
 function app() {
     return (
       <div>
-        <LogInDialog />
+        <LogInDialog/>
       </div>
     )
 }

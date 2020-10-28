@@ -1,9 +1,37 @@
 import React from "react";
-import ReactDom from "react-dom";
+import { render, fireEvent, waitForElement, wait } from "@testing-library/react";
 
 import LogInDialog from "./LogInDialog";
 
 it("should render", () => {
-    const div = document.createElement("div");
-    ReactDom.render(<LogInDialog/>, div);
+    const { getByText } = render(<LogInDialog/>);
+
+    getByText("Log in");
+});
+
+it("should open dialog when button is clicked", () => {
+    const { getByText, queryByText } = render(<LogInDialog/>);
+
+    expect(queryByText("Username")).toBeNull();
+    expect(queryByText("Password")).toBeNull();
+
+    const button = getByText("Log in");
+    fireEvent.click(button);
+    
+    expect(queryByText("Username")).not.toBeNull();
+    expect(queryByText("Password")).not.toBeNull();
+});
+
+it("should close dialog when cancel button is clicked", async () => {
+    const { getByText, queryByText } = render(<LogInDialog/>);
+
+    const button = getByText("Log in");
+    fireEvent.click(button);
+    const cancelButton = getByText("Cancel");
+    fireEvent.click(cancelButton);
+
+    await wait(() => {
+        expect(queryByText("Username")).not.toBeInTheDocument();
+        expect(queryByText("Password")).not.toBeInTheDocument();
+    })
 });
