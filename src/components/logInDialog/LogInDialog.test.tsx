@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, waitForElement, wait } from "@testing-library/react";
+import { render, fireEvent, wait } from "@testing-library/react";
 
 import LogInDialog from "./LogInDialog";
 
@@ -34,4 +34,20 @@ it("should close dialog when cancel button is clicked", async () => {
         expect(queryByText("Username")).not.toBeInTheDocument();
         expect(queryByText("Password")).not.toBeInTheDocument();
     })
+});
+
+it("should display validation error if Username has spaces", async () => {
+    const { getByText, queryByText } = render(<LogInDialog/>);
+
+    const button = getByText("Log in");
+    fireEvent.click(button);
+    
+});
+
+it("should display validation error if Username is empty", async () => {
+    const { getByText, queryByText } = render(<LogInDialog/>);
+
+    const button = getByText("Log in");
+    fireEvent.click(button);
+    
 });
