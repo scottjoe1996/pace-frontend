@@ -7,12 +7,19 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import TextField from "@material-ui/core/TextField";
 
-import getFieldError from "../../utility/logInValidation";
+import Input from '@material-ui/core/Input';
+import FormHelperText from '@material-ui/core/FormHelperText';
+
+import FieldErrors from "../../types/FieldErrors";
+import { getFieldError, isFormValid } from "../../utility/logInValidation";
+
+// import styles from "./LogInDialog.module.css";
+import { FormControl, InputLabel } from "@material-ui/core";
 
 function LogInDialog() {
     const [open, setOpen] = React.useState(false);
     const [fields, setFields] = React.useState({ username: "", password: "" });
-    const [errors, setErrors] = React.useState<{ username?: string, password?: string }>();
+    const [fieldErrors, setFieldErrors] = React.useState<FieldErrors>({});
 
     function handleOpen() {
         setOpen(true);
@@ -23,15 +30,18 @@ function LogInDialog() {
         setFields({ username: "", password: "" })
     }
 
-    function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    function handleFieldChange(event: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = event.target;
-        setErrors({ ...errors, [name]: null});
         setFields({ ...fields, [name]: value });
-        setErrors({ ...errors, [name]: getFieldError(name, value)});
+        setFieldErrors({ ...fieldErrors, [name]: getFieldError(name, value) });
     }
 
-    function handleSubmit() {
-        console.log(fields);
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        if (isFormValid(fieldErrors)) {
+            console.log(fields);
+        }
     }
 
     return (
@@ -40,14 +50,17 @@ function LogInDialog() {
                 Log in
             </Button>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Log in</DialogTitle>
-                <DialogContent>
-                        <TextField
+                <form onSubmit={handleSubmit}>
+                    <DialogTitle>Log in</DialogTitle>
+                    <DialogContent>
+                        {/* <TextField
+                            autoComplete="off"
+                            className={styles.text}
                             name="username"
                             value={fields.username}
-                            onChange={handleChange}
-                            error={Boolean(errors?.username)}
-                            helperText={errors?.username}
+                            onChange={handleFieldChange}
+                            error={Boolean(fieldErrors?.username)}
+                            helperText={fieldErrors?.username}
                             label="Username"
                             placeholder="Username"
                             margin="normal"
@@ -56,11 +69,18 @@ function LogInDialog() {
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                        />
+                        /> */}
+                        <FormControl error={Boolean(fieldErrors?.username)} margin="normal" fullWidth>
+                            <InputLabel shrink={true}>Username</InputLabel>
+                            <Input name="username" value={fields.username} onChange={handleFieldChange} placeholder="Username"/>
+                            <FormHelperText>{fieldErrors?.username}</FormHelperText>
+                        </FormControl>
                         <TextField
                             name="password"
                             value={fields.password}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
+                            error={Boolean(fieldErrors?.password)}
+                            helperText={fieldErrors?.password}
                             label="Password"
                             placeholder="Password"
                             margin="normal"
@@ -70,15 +90,16 @@ function LogInDialog() {
                                 shrink: true,
                             }}
                         />
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="outlined" color="primary" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" color="primary" onClick={handleSubmit}>
-                        Log in
-                    </Button>
-                </DialogActions>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="outlined" color="primary" onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="contained" color="primary" type="submit">
+                            Log in
+                        </Button>
+                    </DialogActions>
+                </form>
             </Dialog>
         </div>
     )

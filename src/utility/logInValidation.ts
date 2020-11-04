@@ -1,12 +1,17 @@
-function getFieldError(field: string, value: string) {
-    if(field === "username") {
-        return getUsernameError(value);
-    }
-    if(field === "password") {
-        return getPasswordError(value);
-    }
+import FieldErrors from "../types/FieldErrors";
 
-    return null;
+function getFieldError(field: string, value: string) {
+    switch(field) {
+        case "username" : {
+            return getUsernameError(value);
+        }
+        case "password" : {
+            return getPasswordError(value);
+        }
+        default : {
+            return null
+        }
+    }
 }
 
 function getUsernameError(username: string) {
@@ -30,7 +35,17 @@ function getPasswordError(password: string) {
         return "Password cannot have empty spaces";
     }
 
-    return null
+    return null;
 }
 
-export default getFieldError;
+function isFormValid(fieldErrors: FieldErrors) {
+    let valid = true;
+
+    Object.values(fieldErrors).forEach(fieldError => {
+        fieldError !== null && (valid = false);
+    });
+
+    return valid
+}
+
+export { getFieldError, isFormValid };
