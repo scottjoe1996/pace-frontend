@@ -9,7 +9,7 @@ function getFieldError(field: string, value: string) {
             return getPasswordError(value);
         }
         default : {
-            return null
+            return " ";
         }
     }
 }
@@ -23,7 +23,7 @@ function getUsernameError(username: string) {
         return "Username cannot have empty spaces";
     }
 
-    return null
+    return " ";
 }
 
 function getPasswordError(password: string) {
@@ -35,17 +35,27 @@ function getPasswordError(password: string) {
         return "Password cannot have empty spaces";
     }
 
-    return null;
+    return " ";
 }
 
 function isFormValid(fieldErrors: FieldErrors) {
     let valid = true;
 
     Object.values(fieldErrors).forEach(fieldError => {
-        fieldError !== null && (valid = false);
+        fieldError !== " " && (valid = false);
     });
 
     return valid
 }
 
-export { getFieldError, isFormValid };
+function isFieldValid(fieldError: string) {
+    let valid = true;
+
+    if (fieldError !== " ") {
+        valid = false;
+    }
+
+    return valid;
+}
+
+export { getFieldError, isFormValid, isFieldValid };

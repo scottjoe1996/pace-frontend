@@ -5,21 +5,18 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import TextField from "@material-ui/core/TextField";
-
-import Input from '@material-ui/core/Input';
+import FilledInput from '@material-ui/core/FilledInput';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 import FieldErrors from "../../types/FieldErrors";
-import { getFieldError, isFormValid } from "../../utility/logInValidation";
-
-// import styles from "./LogInDialog.module.css";
-import { FormControl, InputLabel } from "@material-ui/core";
+import { getFieldError, isFormValid, isFieldValid } from "../../utility/logInValidation";
 
 function LogInDialog() {
     const [open, setOpen] = React.useState(false);
     const [fields, setFields] = React.useState({ username: "", password: "" });
-    const [fieldErrors, setFieldErrors] = React.useState<FieldErrors>({});
+    const [fieldErrors, setFieldErrors] = React.useState<FieldErrors>({ username: " ", password: " " });
 
     function handleOpen() {
         setOpen(true);
@@ -27,7 +24,8 @@ function LogInDialog() {
 
     function handleClose() {
         setOpen(false);
-        setFields({ username: "", password: "" })
+        setFields({ username: "", password: "" });
+        setFieldErrors({ username: " ", password: " " });
     }
 
     function handleFieldChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -38,8 +36,10 @@ function LogInDialog() {
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        const currentFieldErrors = { username: getFieldError("username", fields.username), password: getFieldError("password", fields.password)}
+        setFieldErrors(currentFieldErrors)
 
-        if (isFormValid(fieldErrors)) {
+        if (isFormValid(currentFieldErrors)) {
             console.log(fields);
         }
     }
@@ -49,47 +49,20 @@ function LogInDialog() {
             <Button variant="contained" color="primary" onClick={handleOpen}>
                 Log in
             </Button>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
                 <form onSubmit={handleSubmit}>
                     <DialogTitle>Log in</DialogTitle>
                     <DialogContent>
-                        {/* <TextField
-                            autoComplete="off"
-                            className={styles.text}
-                            name="username"
-                            value={fields.username}
-                            onChange={handleFieldChange}
-                            error={Boolean(fieldErrors?.username)}
-                            helperText={fieldErrors?.username}
-                            label="Username"
-                            placeholder="Username"
-                            margin="normal"
-                            variant="filled"
-                            fullWidth
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        /> */}
-                        <FormControl error={Boolean(fieldErrors?.username)} margin="normal" fullWidth>
-                            <InputLabel shrink={true}>Username</InputLabel>
-                            <Input name="username" value={fields.username} onChange={handleFieldChange} placeholder="Username"/>
-                            <FormHelperText>{fieldErrors?.username}</FormHelperText>
+                        <FormControl error={!isFieldValid(fieldErrors.username)} margin="normal" fullWidth variant="filled" >
+                            <InputLabel htmlFor="username-field" shrink={true}>Username</InputLabel>
+                            <FilledInput id="username-field" name="username" value={fields.username} onChange={handleFieldChange} placeholder="Username"/>
+                            <FormHelperText>{fieldErrors.username}</FormHelperText>
                         </FormControl>
-                        <TextField
-                            name="password"
-                            value={fields.password}
-                            onChange={handleFieldChange}
-                            error={Boolean(fieldErrors?.password)}
-                            helperText={fieldErrors?.password}
-                            label="Password"
-                            placeholder="Password"
-                            margin="normal"
-                            variant="filled"
-                            fullWidth
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
+                        <FormControl error={!isFieldValid(fieldErrors.password)} margin="normal" fullWidth variant="filled">
+                            <InputLabel htmlFor="password-field" shrink={true}>Password</InputLabel>
+                            <FilledInput id="password-field" name="password" type="password" value={fields.password} onChange={handleFieldChange} placeholder="Password"/>
+                            <FormHelperText >{fieldErrors.password}</FormHelperText>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button variant="outlined" color="primary" onClick={handleClose}>
