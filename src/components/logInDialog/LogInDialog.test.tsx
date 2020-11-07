@@ -3,6 +3,7 @@ import { render, fireEvent, wait, RenderResult } from "@testing-library/react";
 import Queries from "@testing-library/dom/queries";
 
 import LogInDialog from "./LogInDialog";
+import { get } from "https";
 
 it("should render", () => {
     const { getByText } = render(<LogInDialog/>);
@@ -81,5 +82,40 @@ describe("Dialog open", () => {
         fireEvent.change(input, { target: { value: "" } });
         
         getByText("Password cannot be empty");
+    });
+
+    it("should display validation error when submitting with empty fields", () => {
+        const { getByText } = queries;
+
+        const button = getByText((content, node) => {
+            if(node.textContent === "Log in") {
+                if (node.outerHTML.includes("type=\"submit\"")) {
+                    return true
+                }
+            }
+            return false
+        })
+
+        fireEvent.click(button);
+
+        getByText("Username cannot be empty");
+        getByText("Password cannot be empty");
+    });
+
+    it("should reset fields after closing and reopening dialog", () => {
+        const { getByText, getByLabelText, getByPlaceholderText } = queries;
+
+        const usernameInput = getByLabelText("Username");
+        fireEvent.change(usernameInput, { target: { value: "test" } });
+        const passwordInput = getByLabelText("Password");
+        fireEvent.change(passwordInput, { target: { value: "test" } });
+
+        // const cancelButton = getByText("Cancel");
+        // fireEvent.click(cancelButton);
+        // const openButton = getByText("Log in");
+        // fireEvent.click(openButton);
+
+        getByPlaceholderText("Username");
+        getByPlaceholderText("Password");
     });
 })
