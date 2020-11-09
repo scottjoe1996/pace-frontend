@@ -12,6 +12,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 
 import FieldErrors from "../../types/FieldErrors";
 import { getFieldError, isFormValid, isFieldValid } from "../../utility/logInValidation";
+import logInUser from "../../requests/security";
 
 function LogInDialog() {
     const [open, setOpen] = React.useState(false);
@@ -40,7 +41,7 @@ function LogInDialog() {
         setFieldErrors(currentFieldErrors)
 
         if (isFormValid(currentFieldErrors)) {
-            console.log(fields);
+            logInUser(fields);
         }
     }
 

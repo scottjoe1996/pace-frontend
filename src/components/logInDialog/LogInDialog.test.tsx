@@ -3,7 +3,6 @@ import { render, fireEvent, wait, RenderResult } from "@testing-library/react";
 import Queries from "@testing-library/dom/queries";
 
 import LogInDialog from "./LogInDialog";
-import { get } from "https";
 
 it("should render", () => {
     const { getByText } = render(<LogInDialog/>);
@@ -27,12 +26,13 @@ describe("Dialog closed", () => {
 })
 
 describe("Dialog open", () => {
+    let openButton: Node | Window;
     let queries: RenderResult<typeof Queries>;
 
     beforeEach(() => {
         queries = render(<LogInDialog/>);
-        const button = queries.getByText("Log in");
-        fireEvent.click(button);
+        openButton = queries.getByText("Log in");
+        fireEvent.click(openButton);
     })
 
     it("should close dialog when cancel button is clicked", async () => {
@@ -103,19 +103,39 @@ describe("Dialog open", () => {
     });
 
     it("should reset fields after closing and reopening dialog", () => {
-        const { getByText, getByLabelText, getByPlaceholderText } = queries;
+        const { getByText, getByLabelText } = queries;
 
         const usernameInput = getByLabelText("Username");
         fireEvent.change(usernameInput, { target: { value: "test" } });
         const passwordInput = getByLabelText("Password");
         fireEvent.change(passwordInput, { target: { value: "test" } });
 
-        // const cancelButton = getByText("Cancel");
-        // fireEvent.click(cancelButton);
-        // const openButton = getByText("Log in");
-        // fireEvent.click(openButton);
+        const cancelButton = getByText("Cancel");
+        fireEvent.click(cancelButton);
+        fireEvent.click(openButton);
 
-        getByPlaceholderText("Username");
-        getByPlaceholderText("Password");
+        expect(usernameInput.outerHTML.includes("value=\"\""));
+        expect(passwordInput.outerHTML.includes("value=\"\""));
+    });
+
+    it("should reset error validation after closing and reopening dialog", async () => {
+        const { getByText, getByLabelText, queryByText } = queries;
+
+        const usernameInput = getByLabelText("Username");
+        fireEvent.change(usernameInput, { target: { value: "Start validation" } });
+        fireEvent.change(usernameInput, { target: { value: "" } });
+        const passwordInput = getByLabelText("Password");
+        fireEvent.change(passwordInput, { target: { value: "Start validation" } });
+        fireEvent.change(passwordInput, { target: { value: "" } });
+
+
+        const cancelButton = getByText("Cancel");
+        fireEvent.click(cancelButton);
+        fireEvent.click(openButton);
+
+        await wait(() => {
+            expect(queryByText("Username cannot be empty")).not.toBeInTheDocument();
+            expect(queryByText("Password cannot be empty")).not.toBeInTheDocument();
+        })
     });
 })
